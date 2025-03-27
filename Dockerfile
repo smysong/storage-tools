@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # 解压static.tar.gz到工作目录
-RUN tar -xzf static.tar.gz -C /app
+RUN tar -xzf static.tar -C /app
 
 # 安装依赖
 RUN pip install --no-cache-dir -r requirements.txt
