@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>包装标签</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 80mm;
+            height: 100mm;
+            font-family: 'Microsoft YaHei', Arial, sans-serif; /* 设置字体为微软雅黑 */
+            font-size: 10pt; /* 设置字体大小为10号 */
+            font-weight: bold; /* 设置字体加粗 */
+            display: flex; /* 修改flex-direction的父元素属性 */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: none;
+        }
+        th {
+            width: 30%;
+        }
+        th, td {
+            border: none;
+            padding: 5px;
+            text-align: left;
+        }
+        .barcode {
+            margin-top: 10px;
+            width: 100%;
+            text-align: right;
+        }
+        .barcode img {
+            width: 220px; /* 设置条形码宽度 */
+            height: 80px; /* 设置条形码高度 */
+        }
+        .product-config {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="barcode">
+        <img src="{{ barcode_url }}" alt="产品条形码">
+    </div>
+    <table>
+        <tr>
+            <th>产品型号:</th>
+            <td> {{ model }}</td>
+        </tr>
+        {% if sales_order %}
+        <tr>
+            <th>销售订单:</th>
+            <td>{{ sales_order }}</td>
+        </tr>
+        {% else %}
+        {% endif %}
+        {% if place_of_origin %}
+        <tr>
+            <th>产&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;地:</th>
+            <td>{{ place_of_origin }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <th></th>
+            <td></td>
+        </tr>
+        {% endif %}
+        {% if phone %}
+        <tr>
+            <th>电&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;话:</th>
+            <td> {{ phone }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <th></th>
+            <td></td>
+        </tr>
+        {% endif %}
+        {% if manufacturer %}
+        <tr>
+            <th>制造商:</th>
+            <td> {{ manufacturer }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <th></th>
+            <td></td>
+        </tr>
+        {% endif %}
+        {% if manufacturer_address %}
+        <tr>
+            <th>制造商地址:</th>
+            <td> {{ manufacturer_address }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <th></th>
+            <td></td>
+        </tr>
+        {% endif %}
+        {% if factory %}
+        <tr>
+            <th>生产厂:</th>
+            <td>{{ factory }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <th></th>
+            <td></td>
+        </tr>
+        {% endif %}
+        {% if factory_address %}
+        <tr>
+            <th>生产厂地址:</th>
+            <td> {{ factory_address }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <th></th>
+            <td></td>
+        </tr>
+        {% endif %}
+        <tr>
+            <th>产品配置:</th>
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="product-config">
+                <span>
+                    {% for config in configurations %}
+                        {{ config }}<br>
+                    {% endfor %}
+                </span>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

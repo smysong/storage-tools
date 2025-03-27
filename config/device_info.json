@@ -1,0 +1,34 @@
+{
+    "曙光": {
+        "logo": "sugon.png",
+        "product_name": "存储节点",
+        "models": ["DS600 G30", "DS800-G30", "DS800-G30H", "DS800-G35", "DS800-G35H"],
+        "manufacturer": "曙光信息产业(北京)有限公司",
+        "power": ["220VAC 50Hz 3.5A(x2)", "100-240VAC 50-60Hz 9A", "100-240VAC 50-60Hz 9A", "220VAC 50Hz 5A", "220VAC 50Hz 5A"],
+        "icon": ["weee.png", "rc.png", "3c.png", "ecc.png", "cel.png"]
+    },
+    "宁畅": {
+        "logo": "nettrix.png",
+        "product_name": "存储节点",
+        "models": ["NS600 G30", "NS800-G30", "NS800-G30H", "NS800-G35", "NS800-G35H"],
+        "manufacturer": "宁畅信息产业（北京）有限公司",
+        "power": ["220VAC 50Hz 3.5A(x2)", "100-240VAC 50-60Hz 9A", "100-240VAC 50-60Hz 9A", "220VAC 50Hz 5A", "220VAC 50Hz 5A"],
+        "icon": ["weee.png", "rc.png", "3c.png", "ecc.png", "cel.png"]
+    },
+    "可控": {
+        "logo": "suma.png",
+        "product_name": "存储节点",
+        "models": ["DS600 K30", "DS800-K30", "DS800-K30H", "DS800-K35", "DS800-K35H"],
+        "manufacturer": "中科可控信息产业有限公司",
+        "power": ["220VAC 50Hz 3.5A(x2)", "100-240VAC 50-60Hz 9A", "100-240VAC 50-60Hz 9A", "220VAC 50Hz 5A", "220VAC 50Hz 5A"],
+        "icon": ["weee.png", "rc.png", "3c.png", "ecc.png", "cel.png"]
+    },
+    "白牌": {
+        "logo": "None.png",
+        "product_name": "Storage",
+        "models": ["DS600 K30", "DS800-K30", "DS800-K30H", "DS800-K35", "DS800-K35H"],
+        "manufacturer": "",
+        "power": ["220VAC 50Hz 3.5A(x2)", "100-240VAC 50-60Hz 9A", "100-240VAC 50-60Hz 9A", "220VAC 50Hz 5A", "220VAC 50Hz 5A"],
+        "icon": ["weee.png", "rc.png", "3c.png", "ecc.png", "cel.png"]
+    }
+}

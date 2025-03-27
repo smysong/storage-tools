@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}产品附件和资料装箱清单生成{% endblock %}
+
+{% block content %}
+<style>
+    /* 特定于 product-accessories.html 的样式 */
+    h1 {
+        color: #4CAF50; /* 绿色标题 */
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* 表单样式 */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px; /* 圆角 */
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* 内阴影 */
+        transition: border-color 0.3s ease; /* 平滑过渡效果 */
+    }
+
+    .form-group input:focus, 
+    .form-group select:focus, 
+    .form-group textarea:focus {
+        border-color: #4CAF50; /* 聚焦时绿色边框 */
+        outline: none;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* 聚焦时外发光 */
+    }
+
+    /* 按钮样式 */
+    button[type="submit"], 
+    button[type="button"] {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4CAF50; /* 绿色背景 */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover, 
+    button[type="button"]:hover {
+        background-color: #45a049; /* 悬停时深绿色 */
+    }
+
+    /* 产品清单样式 */
+    .accessories-list {
+        margin-bottom: 15px;
+    }
+
+    .accessories-list .accessories-item {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+
+    .accessories-list .accessories-item label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .accessories-list .accessories-item input, 
+    .accessories-list .accessories-item select, 
+    .accessories-list .accessories-item textarea {
+        width: calc(100% - 160px);
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .accessories-list .accessories-item button.remove {
+        margin-left: auto;
+        padding: 5px 10px;
+        margin-top: 10px;
+        background-color: #f44336; /* 红色背景 */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .accessories-list .accessories-item button.remove:hover {
+        background-color: #d32f2f; /* 悬停时深红色 */
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        .form-group label, 
+        .accessories-list .accessories-item label {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea,
+        .accessories-list .accessories-item input, 
+        .accessories-list .accessories-item select, 
+        .accessories-list .accessories-item textarea {
+            width: 100%;
+        }
+    }
+</style>
+
+<h1>产品附件和资料装箱清单生成</h1>
+<form id="accessories-form">
+    <div class="form-group">
+        <label for="brand">选择品牌:</label>
+        <select id="brand" name="brand" required>
+            <option value="">请选择品牌</option>
+            {% for brand, info in brands.items() %}
+                <option value="{{ brand }}">{{ brand }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="model">选择品名:</label>
+        <select id="model" name="model" required>
+            <option value="">请选择品名</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="sales_number">销售凭证号:</label>
+        <input type="text" id="sales_number" name="sales_number">
+    </div>
+    <div class="form-group">
+        <label for="serial_number">产品序列号:</label>
+        <input type="text" id="serial_number" name="serial_number" required>
+    </div>
+    <div class="accessories-list">
+        <h4>附件和资料清单</h4>
+        <div id="accessories-container">
+            <!-- 附件项将通过JavaScript动态添加 -->
+        </div>
+        <button type="button" id="add-accessories">添加附件</button>
+    </div>
+    <div class="form-group">
+        <label for="date">日期:</label>
+        <input type="date" id="date" name="date" required>
+    </div>
+    <!-- 添加隐藏字段用于传递条码Base64编码 -->
+    <input type="hidden" id="barcode_base64" name="barcode_base64">
+    <button type="submit">立即生成</button>
+</form>
+
+<script>
+    // 将附件信息传递给JavaScript
+    const accessoriesInfo = {{ accessories|tojson }};
+
+    // 品牌选择事件
+    document.getElementById('brand').addEventListener('change', function() {
+        const brand = this.value;
+        const modelSelect = document.getElementById('model');
+        modelSelect.innerHTML = '<option value="">请选择品名</option>';
+        if (brand) {
+            const models = {{ brands|tojson }};
+            models[brand].models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+        }
+    });
+
+    // 添加附件功能
+    document.getElementById('add-accessories').addEventListener('click', function() {
+        const accessoriesContainer = document.getElementById('accessories-container');
+        const accessoriesItem = document.createElement('div');
+        accessoriesItem.className = 'accessories-item';
+
+        // 创建下拉菜单选择附件
+        let accessoryOptions = '<option value="">请选择附件</option>';
+        for (const [accessory, info] of Object.entries(accessoriesInfo)) {
+            accessoryOptions += `<option value="${accessory}" data-code="${info.code}" data-unit="${info.unit}">${accessory} (物料编码: ${info.code}, 单位: ${info.unit})</option>`;
+        }
+
+        accessoriesItem.innerHTML = `
+            <label>附件名称:</label>
+            <select name="accessory[]" required>${accessoryOptions}</select>
+            <label>数量:</label>
+            <input type="number" name="quantity[]" min="1" value="1" required>
+            <label>物料编码:</label>
+            <input type="text" name="accessory_serial[]" readonly>
+            <label>单位:</label>
+            <input type="text" name="accessory_unit[]" readonly>
+            <button type="button" class="remove">删除</button>
+        `;
+
+        // 附件选择事件
+        const accessorySelect = accessoriesItem.querySelector('select[name="accessory[]"]');
+        accessorySelect.addEventListener('change', function() {
+            const selectedAccessory = this.value;
+            const accessoryInfo = accessoriesInfo[selectedAccessory];
+            if (accessoryInfo) {
+                const accessorySerialInput = accessoriesItem.querySelector('input[name="accessory_serial[]"]');
+                accessorySerialInput.value = accessoryInfo.code;
+                const accessoryUnitInput = accessoriesItem.querySelector('input[name="accessory_unit[]"]');
+                accessoryUnitInput.value = accessoryInfo.unit;
+
+                // 判断是否为“1.5m电源线”，如果是则设置数量为2
+                if (selectedAccessory === '1.5m电源线') {
+                    const quantityInput = accessoriesItem.querySelector('input[name="quantity[]"]');
+                    quantityInput.value = 2;
+                }
+            } else {
+                const accessorySerialInput = accessoriesItem.querySelector('input[name="accessory_serial[]"]');
+                accessorySerialInput.value = '';
+                const accessoryUnitInput = accessoriesItem.querySelector('input[name="accessory_unit[]"]');
+                accessoryUnitInput.value = '';
+            }
+        });
+
+        // 删除按钮事件
+        accessoriesItem.querySelector('.remove').addEventListener('click', function() {
+            accessoriesContainer.removeChild(accessoriesItem);
+        });
+
+        accessoriesContainer.appendChild(accessoriesItem);
+    });
+
+    // 表单提交事件
+    document.getElementById('accessories-form').addEventListener('submit', function(event) {
+        event.preventDefault();  // 阻止表单默认提交行为
+
+        const serialNumber = document.getElementById('serial_number').value;
+        if (!serialNumber) {
+            alert('请提供产品序列号');
+            return;
+        }
+
+        fetch(`/generate_barcode?serial=${encodeURIComponent(serialNumber)}`)
+            .then(response => response.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64data = reader.result.split(',')[1];
+                    document.getElementById('barcode_base64').value = `data:image/png;base64,${base64data}`;
+
+                    // 提交表单
+                    const formData = new FormData(document.getElementById('accessories-form'));
+                    fetch('/generate_accessories', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // 在新标签页中打开生成的HTML文件
+                        if (data.url) {
+                            window.open(data.url, '_blank');
+                        } else {
+                            console.error('无法获取生成文件的 URL');
+                            alert('生成文件失败，请重试');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('生成文件失败:', error);
+                        alert('生成文件失败，请重试');
+                    });
+                };
+                reader.readAsDataURL(blob);
+            })
+            .catch(error => {
+                console.error('生成条码失败:', error);
+                alert('生成条码失败，请重试');
+            });
+    });
+</script>
+{% endblock %}

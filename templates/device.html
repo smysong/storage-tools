@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}设备标签生成{% endblock %}
+
+{% block content %}
+<style>
+    h1 {
+        color: #4CAF50; /* 绿色标题 */
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    /* 表单样式 */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px; /* 圆角 */
+        transition: border-color 0.3s ease; /* 平滑过渡效果 */
+    }
+
+    .form-group input:focus, 
+    .form-group select:focus, 
+    .form-group textarea:focus {
+        border-color: #4CAF50; /* 聚焦时绿色边框 */
+        outline: none;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* 聚焦时外发光 */
+    }
+
+    /* 按钮样式 */
+    button[type="submit"], 
+    button[type="button"] {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4CAF50; /* 绿色背景 */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover, 
+    button[type="button"]:hover {
+        background-color: #45a049; /* 悬停时深绿色 */
+    }
+
+    /* 标识选框样式 */
+    .icon-checkboxes {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center; /* 垂直居中对齐 */
+    }
+
+    .icon-checkboxes label {
+        margin-right: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center; /* 垂直居中对齐 */
+    }
+
+    .icon-checkboxes input {
+        width: 15px;
+        margin-right: 5px; /* 增加一些间距 */
+        margin-bottom: 10px;
+    }
+</style>
+
+<h1>设备标签生成</h1>
+
+<form id="label-form" action="{{ url_for('generate_device_label') }}" method="POST">
+    <div class="form-group">
+        <label for="brand">品牌:</label>
+        <select id="brand" name="brand" required onchange="updateModels()">
+            <option value="">请选择品牌</option>
+            {% for brand, details in brands.items() %}
+                <option value="{{ brand }}">{{ brand }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="model">产品型号:</label>
+        <select id="model" name="model" required onchange="updatePowerAndIcon()">
+            <option value="">请选择产品型号</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="serial_number">产品序列号:</label>
+        <input type="text" id="serial_number" name="serial_number" required>
+    </div>
+
+    <div class="form-group">
+        <label for="power_parameters">电源参数:</label>
+        <select id="power_parameters" name="power_parameters" required>
+            <option value="">请选择电源参数</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="configurations">产品配置:</label>
+        <textarea id="configurations" name="configurations" rows="5" placeholder="每行一个配置" required>
+16G_DDR4_3200x0
+8TB_3.5_7200_NL_SASx0
+16TB_3.5_7200_NL_SASx0
+960GB_2.5_SAS_SSDx0</textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="icons">认证标识:</label>
+        <div id="icon-checkboxes" class="icon-checkboxes">
+            <!-- 图标复选框将动态生成在这里 -->
+        </div>
+    </div>
+
+    <input type="hidden" id="barcode_base64" name="barcode_base64" value="">
+
+    <button type="submit">生成标签</button>
+</form>
+
+<script>
+    const deviceInfo = {{ device_info | tojson | safe }};
+
+    function updateModels() {
+        const brandSelect = document.getElementById('brand');
+        const modelSelect = document.getElementById('model');
+        const selectedBrand = brandSelect.value;
+
+        // 清空当前的产品型号选项
+        modelSelect.innerHTML = '<option value="">请选择产品型号</option>';
+        document.getElementById('power_parameters').innerHTML = '<option value="">请选择电源参数</option>';
+        document.getElementById('icon-checkboxes').innerHTML = '';
+
+        if (selectedBrand && deviceInfo[selectedBrand]) {
+            const models = deviceInfo[selectedBrand].models;
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+        }
+    }
+
+    function updatePowerAndIcon() {
+        const brandSelect = document.getElementById('brand');
+        const modelSelect = document.getElementById('model');
+        const selectedBrand = brandSelect.value;
+        const selectedModel = modelSelect.value;
+
+        const powerSelect = document.getElementById('power_parameters');
+        const iconContainer = document.getElementById('icon-checkboxes');
+
+        // 清空当前的电源参数选项和图标复选框
+        powerSelect.innerHTML = '<option value="">请选择电源参数</option>';
+        iconContainer.innerHTML = '';
+
+        if (selectedBrand && selectedModel && deviceInfo[selectedBrand]) {
+            const models = deviceInfo[selectedBrand].models;
+            const powers = deviceInfo[selectedBrand].power;
+            const icons = deviceInfo[selectedBrand].icon;
+
+            const modelIndex = models.indexOf(selectedModel);
+            if (modelIndex !== -1) {
+                const powerOption = document.createElement('option');
+                powerOption.value = powers[modelIndex];
+                powerOption.textContent = powers[modelIndex];
+                powerSelect.appendChild(powerOption);
+
+                icons.forEach((icon, index) => {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'icon[]';
+                    checkbox.value = icon;
+                    checkbox.id = `icon-${icon}`;
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `icon-${icon}`;
+                    label.textContent = `标识 ${icon}`;
+
+                    iconContainer.appendChild(checkbox);
+                    iconContainer.appendChild(label);
+                    iconContainer.appendChild(document.createElement('br'));
+
+                    // 根据品牌默认勾选标识
+                    if (selectedBrand === '曙光') {
+                        checkbox.checked = true;
+                    } else if (selectedBrand === '宁畅') {
+                        checkbox.checked = index < 3;
+                    } else if (selectedBrand === '可控') {
+                        checkbox.checked = index < 4;
+                    } else if (selectedBrand === '白牌') {
+                        checkbox.checked = index < 2;
+                    }
+                });
+            }
+        }
+    }
+
+    document.getElementById('label-form').addEventListener('submit', function(event) {
+        event.preventDefault();  // 阻止表单默认提交行为
+
+        const serialNumber = document.getElementById('serial_number').value;
+        if (!serialNumber) {
+            alert('请提供产品序列号');
+            return;
+        }
+
+        fetch(`/generate_qrcode?serial=${encodeURIComponent(serialNumber)}`)
+            .then(response => response.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64data = reader.result.split(',')[1];
+                    document.getElementById('barcode_base64').value = `data:image/png;base64,${base64data}`;
+
+                    // 提交表单
+                    const formData = new FormData(document.getElementById('label-form'));
+                    fetch('/generate_device_label', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // 在新标签页中打开生成的HTML文件
+                        window.open(data.url, '_blank');
+                    })
+                    .catch(error => {
+                        console.error('生成标签失败:', error);
+                        alert('生成标签失败，请重试');
+                    });
+                };
+                reader.readAsDataURL(blob);
+            })
+            .catch(error => {
+                console.error('生成条码失败:', error);
+                alert('生成条码失败，请重试');
+            });
+    });
+</script>
+{% endblock %}

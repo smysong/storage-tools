@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品附件和资料装箱清单</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .logo {
+            position: absolute;
+            top: 1mm;
+            left: 5mm;
+            z-index: 1000; /* 确保 logo 在最上层 */
+        }
+        .logo img {
+            width: 120px;
+            height: 40px;
+        }
+        h1 {
+            font-family: '微软雅黑', sans-serif;
+            font-size: 1.8em; /* 小一号字体 */
+            font-weight: normal; /* 标题不加粗 */
+            margin-top: 60px; /* 根据logo大小调整标题的上边距 */
+            text-align: center;
+        }
+        .barcode-overlay {
+            position: absolute;
+            top: 105px; /* 根据实际情况调整top值 */
+            right: 8mm; /* 根据实际情况调整right值 */
+            z-index: 1000; /* 确保条码在最上层 */
+        }
+
+        .barcode-overlay img {
+            width: 180px; /* 根据实际需求调整宽度 */
+            height: 40px; /* 根据实际需求调整高度 */
+        }
+        .barcode img {
+            width: 180px; /* 根据实际需求调整宽度 */
+            height: 40px; /* 根据实际需求调整高度 */
+        }
+        table {
+            border-collapse: collapse;
+            width: 90%; /* 调整表格宽度为页面宽度的90% */
+            margin-left: auto;
+            margin-right: auto;
+            border: none; /* 取消表格边框 */
+        }
+        table th:nth-child(1) {
+            width: 15%; /* 产品名称列 */
+        }
+        table th:nth-child(2) {
+            width: 45%; /* 产品编码列 */
+        }
+        table th:nth-child(3) {
+            width: 30%; /* 数量列 */
+        }
+        table th:nth-child(4) {
+            width: 10%; /* 单位列 */
+        }
+        th, td {
+            border: none; /* 取消单元格边框 */
+            padding: 2px;
+            text-align: center;
+            font-family: '微软雅黑', sans-serif;
+            font-size: 12px; /* 小五号字体 */
+            font-weight: normal; /* 不加粗 */
+        }
+        th {
+            background-color: #ffffff;
+        }
+        .right-align {
+            text-align: right;
+        }
+        .left-align {
+            text-align: left;
+        }
+        .table-container {
+            margin-top: 30px; /* 两个表格之间的间距 */
+        }
+        .new-table {
+            border: 1px solid #000; /* 新表格的边框 */
+            width: 90%; /* 确保新表格宽度占满页面宽度的90% */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .new-table th, .new-table td {
+            border: 1px solid #000; /* 新表格单元格的边框 */
+        }
+        .new-table tr {
+            height: 20px; /* 设置每行的最低行高为20px，可以根据需要调整 */
+        }
+        .new-table th:nth-child(1) {
+            width: 10%; /* 产品名称列 */
+        }
+        .new-table th:nth-child(2) {
+            width: 40%; /* 产品编码列 */
+        }
+        .new-table th:nth-child(3) {
+            width: 20%; /* 数量列 */
+        }
+        .new-table th:nth-child(4) {
+            width: 15%; /* 单位列 */
+        }
+        .new-table th:nth-child(5) {
+            width: 15%; /* 单位列 */
+        }
+        .inspection-info {
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 60px; /* 与表格之间的间距 */
+            font-family: '微软雅黑', sans-serif;
+            font-size: 12px; /* 五号字体 */
+            font-weight: normal; /* 不加粗 */
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="{{ logo }}" alt="产品Logo">
+    </div>
+    <h1>产品附件和资料装箱清单</h1>
+    {% if sales %}
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tr>
+            <td class="right-align">销售凭证号：</td>
+            <td class="left-align">{{ sales }}</td>
+            <td class="left-align"></td>
+            <td class="left-align"></td>
+        </tr>
+    {% else %}
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tr>
+            <td class="right-align" style="height: 16px;"></td>
+            <td class="left-align" style="height: 16px;"></td>
+            <td class="left-align" style="height: 16px;"></td>
+            <td class="left-align" style="height: 16px;"></td>
+        </tr>
+    {% endif %}
+    <div class="barcode-overlay">
+        <img src="{{ barcode_url }}" alt="产品条码">
+    </div>
+        <tr>
+            <td class="right-align">产品名称：</td>
+            <td class="left-align">{{ model }}</td>
+            <td class="right-align">产品序列号：</td>
+            <td class="left-align">{{ serial_number }}</td>
+        </tr>
+    </table>
+    <div class="table-container">
+        <table class="new-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>附件资料名称</th>
+                    <th>物料编码</th>
+                    <th>数量</th>
+                    <th>单位</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for accessory in accessories %}
+                    <tr>
+                        <td>{% if accessory.name %}{{ loop.index }}{% else %}{% endif %}</td>
+                        <td>{{ accessory.name }}</td>
+                        <td>{{ accessory.code }}</td>
+                        <td>{{ accessory.quantity }}</td>
+                        <td>{{ accessory.unit }}</td> 
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="inspection-info">
+        <span>检验员：007</span>
+        <span>日期：{{ date }}</span>
+    </div>
+</body>
+</html>

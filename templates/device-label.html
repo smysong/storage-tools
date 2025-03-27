@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备标签</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100mm;
+            height: 80mm;
+            font-family: 'Microsoft YaHei', Arial, sans-serif; /* 设置字体为微软雅黑 */
+            font-size: 10pt; /* 设置字体大小为10号 */
+            font-weight: bold; /* 设置字体加粗 */
+            display: flex; /* 修改flex-direction的父元素属性 */
+            flex-direction: column;
+            justify-content: flex-start; /* 将内容对齐到顶部 */
+            align-items: center;
+            position: relative; /* 添加相对定位 */
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: none;
+            border-top: 1px solid black; /* 添加上框线 */
+            border-bottom: 1px solid black; /* 添加下框线 */
+        }
+        th {
+            width: 20%;
+            vertical-align: top; /* 设置文字顶部对齐 */
+        }
+        th, td {
+            border: none;
+            padding: 3px;
+            text-align: left;
+        }
+        .logo {
+            position: relative;
+            top: 1mm;
+            left: 1mm;
+            z-index: 1000; /* 确保 logo 在最上层 */
+        }
+        .logo img {
+            width: 110px;
+            height: 30px;
+        }
+        .header-container {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; /* 将子元素对齐到容器底部 */
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .company-name {
+            text-align: right;
+        }
+        .product-config {
+            text-align: left;
+            vertical-align: top;
+        }
+        .flag {
+            width: 100%;
+            margin-top: 5px; /* 调整标志与表格的距离 */
+        }
+        .flag img {
+            width: 50px;
+            height: 50px;
+        }
+        .quality-certificate {
+            position: absolute; /* 绝对定位 */
+            top: 11mm; /* 距离顶部11mm */
+            right: 0mm; /* 距离右侧0mm */
+            display: flex;
+            align-items: center;
+            background-color: white; /* 背景颜色 */
+            padding: 5px;
+        }
+        .quality-certificate span {
+            margin-right: 10px; /* 间距 */
+        }
+        .quality-certificate img {
+            width: 60px;
+            height: 60px;
+        }
+        .certificate{
+            border: 1px solid black;
+            text-align: center; /* 文字居中 */
+            font-size: 12px;
+            padding: 2px;
+        }
+        /* 新增的 tl_flag 样式 */
+        .tl_flag {
+            position: absolute; /* 绝对定位 */
+            bottom: 0; /* 距离底部0 */
+            right: 0; /* 距离右侧0 */
+            width: 60px; /* 设置宽度 */
+            height: 30px; /* 设置高度 */
+        }
+        .tl_flag img {
+            width: 100%; /* 使图片宽度占满容器 */
+            height: 100%; /* 使图片高度占满容器 */
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="logo">
+            <img id="logo-img" src="{{ logo }}" alt="产品Logo">
+        </div>
+        <div class="company-name">
+            <span>{{ manufacturer }}</span>
+        </div>
+    </div>
+    <table>
+        <tr>
+            <th>产品名称:</th>
+            <td>{{ product_name }}</td>
+        </tr>
+        <tr>
+            <th>产品型号:</th>
+            <td>{{ model }}</td>
+        </tr>
+        <tr>
+            <th>序&ensp;列&ensp;号:</th>
+            <td>{{ serial_number }}</td>
+        </tr>
+        <tr>
+            <th>电源参数:</th>
+            <td>{{ power_parameters }}</td>
+        </tr>
+        <tr>
+            <th style="vertical-align: top;">产品配置:</th>
+            <td colspan="2" class="product-config">
+                <span>
+                    {% for config in configurations %}
+                    {{ config }}<br>
+                    {% endfor %}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th style="vertical-align: middle;">警&ensp;&ensp;&ensp;&ensp;告:</th>
+            <td style="vertical-align: middle;">电网电压与电源设置电压必须相符</td>
+            <td style="font-size: 18px;">RoHS</td>
+        </tr>
+    </table>
+    <div class="quality-certificate">
+        <span class="certificate">产品<br>合格证</span>
+        <img src="{{ barcode_url }}" alt="二维码">
+    </div>
+    <div class="flag">
+        {% for icon in icons %}
+        <img src="/static/images/{{ icon }}" alt="icon">
+        {% endfor %}
+    </div>
+    <div class="tl_flag" id="tl_flag">
+        <img src="/static/images/tl.png" alt="icon">
+    </div>
+
+    <script>
+        // 获取 logo 图片元素
+        const logoImg = document.getElementById('logo-img');
+        // 获取 tl_flag 元素
+        const tlFlag = document.getElementById('tl_flag');
+
+        // 检查 logo 的 src 是否以 'suma.png' 结尾
+        if (!logoImg.src.endsWith('suma.png')) {
+            // 如果不是，则隐藏 tl_flag
+            tlFlag.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

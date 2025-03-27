@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品装机单</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .logo {
+            position: absolute;
+            top: 1mm;
+            left: 5mm;
+            z-index: 1000; /* 确保 logo 在最上层 */
+        }
+        .logo img {
+            width: 120px;
+            height: 40px;
+        }
+        h1 {
+            font-family: '微软雅黑', sans-serif;
+            font-size: 1.8em; /* 小一号字体 */
+            font-weight: normal; /* 标题不加粗 */
+            margin-top: 60px; /* 根据logo大小调整标题的上边距 */
+            text-align: center;
+        }
+        .barcode {
+            text-align: right;
+            margin-top: 20px; /* 根据需要调整条码与标题之间的间距 */
+            width: 100%;
+            box-sizing: border-box;
+            padding-right: 8mm; /* 确保条码距离右侧10mm */
+        }
+        .barcode img {
+            width: 180px; /* 根据实际需求调整宽度 */
+            height: 40px; /* 根据实际需求调整高度 */
+        }
+        table {
+            border-collapse: collapse;
+            width: 90%; /* 调整表格宽度为页面宽度的90% */
+            margin-left: auto;
+            margin-right: auto;
+            border: none; /* 取消表格边框 */
+        }
+        th, td {
+            border: none; /* 取消单元格边框 */
+            padding: 2px;
+            text-align: center;
+            font-family: '微软雅黑', sans-serif;
+            font-size: 12px; /* 小五号字体 */
+            font-weight: normal; /* 不加粗 */
+        }
+        th {
+            background-color: #ffffff;
+        }
+        .right-align {
+            text-align: right;
+        }
+        .left-align {
+            text-align: left;
+        }
+        .table-container {
+            margin-top: 10px; /* 两个表格之间的间距 */
+        }
+        .new-table {
+            border: 1px solid #000; /* 新表格的边框 */
+            width: 90%; /* 确保新表格宽度占满页面宽度的90% */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .new-table th, .new-table td {
+            border: 1px solid #000; /* 新表格单元格的边框 */
+        }
+        .new-table tr {
+        height: 20px; /* 设置每行的最低行高为20px，可以根据需要调整 */
+        }
+        .new-table th:nth-child(1) {
+            width: 35%; /* 产品名称列 */
+        }
+        .new-table th:nth-child(2) {
+            width: 20%; /* 产品编码列 */
+        }
+        .new-table th:nth-child(3) {
+            width: 35%; /* 产品序列号（S/N）列 */
+        }
+        .inspection-info {
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 60px; /* 与表格之间的间距 */
+            font-family: '微软雅黑', sans-serif;
+            font-size: 12px; /* 五号字体 */
+            font-weight: normal; /* 不加粗 */
+            display: flex;
+            justify-content: space-between;
+        }
+        .download-info {
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px; /* 与检验员信息之间的间距 */
+            font-family: '微软雅黑', sans-serif;
+            font-size: 12px; /* 小五号字体 */
+            font-weight: normal; /* 不加粗 */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="{{ logo }}" alt="产品Logo">
+    </div>
+    <h1>产品装机单</h1>
+    <div class="barcode">
+        <img src="{{ barcode_url }}" alt="产品条码">
+    </div>
+    <table>
+        <tr>
+            <td class="right-align">品名：</td>
+            <td class="left-align">{{ model }}</td>
+            <td class="right-align">产品序列号：</td>
+            <td class="left-align">{{ serial_number }}</td>
+        </tr>
+        {% if address %}
+            <tr>
+                <td class="right-align">地址：</td>
+                <td class="left-align">{{ address }}</td>
+                <td class="right-align">执行标准（服务器产品）：</td>
+                <td class="left-align">GB/T 9813.3-2017</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td class="right-align"></td>
+                <td class="left-align"style="width: 235px;"></td>
+                <td class="right-align">执行标准（服务器产品）：</td>
+                <td class="left-align">GB/T 9813.3-2017</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td class="right-align"></td>
+            <td class="left-align"></td>
+            <td class="right-align">执行标准（计算机、工作站产品）：</td>
+            <td class="left-align">GB/T 9813.1-2016</td>
+        </tr>
+        {% if phone %}
+        <tr>
+            <td class="right-align">电话：</td>
+            <td class="left-align">{{ phone }}</td>
+            <td class="right-align">产地：</td>
+            <td class="left-align">中国</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td class="right-align"style="height: 16px;"></td>
+            <td class="left-align"></td>
+            <td class="right-align"></td>
+            <td class="left-align"></td>
+        </tr>
+        {% endif %}
+    </table>
+    <div class="table-container">
+        <table class="new-table">
+            <thead>
+                <tr>
+                    <th>产品名称</th>
+                    <th>产品编码</th>
+                    <th>产品序列号（S/N）</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.code }}</td>
+                        <td>{{ product.serial }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="inspection-info">
+        <span>检验员：007</span>
+        <span>日期：{{ date }}</span>
+    </div>
+    {% if show_download_link %}
+        <div class="download-info">
+            软件产品下载地址: https://go.sugon.com/software/download， 如需访问请拨打400售后服务电话咨询用户名及密码
+        </div>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+    "曙光": {
+        "models": ["DS600 G30", "DS800-G30", "DS800-G30H", "DS800-G35", "DS800-G35H"],
+        "address": "北京市海淀区东北旺西路8号院36号楼",
+        "phone": "400-810-0466",
+        "logo": "sugon.png"
+    },
+    "宁畅": {
+        "models": ["NS600 G30", "NS800-G30", "NS800-G30H", "NS800-G35", "NS800-G35H"],
+        "address": "北京市海淀区东北旺西路8号院27号楼C座二层201号",
+        "phone": "400-898-1688",
+        "logo": "nettrix.png"
+    },
+    "可控": {
+        "models": ["DS600 K30", "DS800-K30", "DS800-K30H", "DS800-K35", "DS800-K35H"],
+        "address": "江苏省昆山市玉山镇南淞路88号",
+        "phone": "400-898-1286",
+        "logo": "suma.png"
+    },
+    "白牌": {
+        "models": ["DS600 G30", "DS800-G30", "DS800-G30H", "DS800-G35", "DS800-G35H"],
+        "address": "",
+        "phone": "",
+        "logo": "None.png"
+    }
+}

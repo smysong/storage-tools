@@ -1,0 +1,38 @@
+{
+    "曙光": {
+        "models": ["DS600 G30", "DS800-G30", "DS800-G30H", "DS800-G35", "DS800-G35H"],
+        "place_of_origin": "中国",
+        "phone": "400-810-0466",
+        "manufacturer": "曙光信息产业(北京)有限公司",
+        "manufacturer_address": "北京市海淀区东北旺西路8号院36号楼",
+        "factory": "曙光信息产业股份有限公司",
+        "factory_address": "天津市华苑产业园区海泰.华科大街15号"
+    },
+    "宁畅": {
+        "models": ["NS600 G30", "NS800-G30", "NS800-G30H", "NS800-G35", "NS800-G35H"],
+        "place_of_origin": "中国",
+        "phone": "400-898-1688",
+        "manufacturer": "宁畅信息产业（北京）有限公司",
+        "manufacturer_address": "北京市海淀区东北旺西路8号院27号楼C座二层201号",
+        "factory": "",
+        "factory_address": ""
+    },
+    "可控": {
+        "models": ["DS600 K30", "DS800-K30", "DS800-K30H", "DS800-K35", "DS800-K35H"],
+        "place_of_origin": "中国",
+        "phone": "400-898-1286",
+        "manufacturer": "中科可控信息产业有限公司",
+        "manufacturer_address": "江苏省昆山市玉山镇南淞路88号",
+        "factory": "新疆欣光信息技术有限公司",
+        "factory_address": "新疆乌鲁木齐高新技术产业开发区(新市区)宏扬路999号"
+    },
+    "白牌": {
+        "models": ["DS600 G30", "DS800-G30", "DS800-G30H", "DS800-G35", "DS800-G35H"],
+        "place_of_origin": "",
+        "phone": "",
+        "manufacturer": "",
+        "manufacturer_address": "",
+        "factory": "",
+        "factory_address": ""
+    }
+}
