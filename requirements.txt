@@ -1,5 +1,5 @@
-Flask==2.0.1
-Jinja2==3.0.1
-barcode==0.14.0
-Pillow==8.3.2
-qrcode[pil]==6.1
+Flask
+Jinja2
+barcode
+Pillow
+qrcode[pil]
