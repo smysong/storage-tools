@@ -17,4 +17,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8080
 
 # 运行应用
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
+CMD ["python", "app.py"]
