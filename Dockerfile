@@ -7,12 +7,8 @@ WORKDIR /app
 # 复制当前目录下的所有文件到工作目录
 COPY . /app
 
-# 安装unzip工具和依赖
-RUN apt-get update && apt-get install -y unzip && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# 解压static.zip到工作目录
-RUN unzip static.zip -d /app
+# 解压static.tar.gz到工作目录
+RUN tar -xzf static.tar.gz -C /app
 
 # 安装依赖
 RUN pip install --no-cache-dir -r requirements.txt
