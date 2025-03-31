@@ -4,11 +4,6 @@
 
 {% block content %}
 <style>
-    h1 {
-        color: #4CAF50; /* 绿色标题 */
-        text-align: center;
-        margin-bottom: 20px;
-    }
     /* 表单样式 */
     .form-group {
         margin-bottom: 15px;
@@ -33,27 +28,9 @@
     .form-group input:focus, 
     .form-group select:focus, 
     .form-group textarea:focus {
-        border-color: #4CAF50; /* 聚焦时绿色边框 */
+        border-color: #007bff; /* 聚焦时绿色边框 */
         outline: none;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* 聚焦时外发光 */
-    }
-
-    /* 按钮样式 */
-    button[type="submit"], 
-    button[type="button"] {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #4CAF50; /* 绿色背景 */
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    button[type="submit"]:hover, 
-    button[type="button"]:hover {
-        background-color: #45a049; /* 悬停时深绿色 */
+        box-shadow: 0 0 5px rgba(23, 106, 201, 0.5); /* 聚焦时外发光 */
     }
 
     /* 标识选框样式 */
@@ -77,7 +54,7 @@
     }
 </style>
 
-<h1>设备标签生成</h1>
+<h3>设备标签生成</h3>
 
 <form id="label-form" action="{{ url_for('generate_device_label') }}" method="POST">
     <div class="form-group">
@@ -127,7 +104,7 @@
 
     <input type="hidden" id="barcode_base64" name="barcode_base64" value="">
 
-    <button type="submit">生成标签</button>
+    <button class="btn btn-primary" type="submit">生成标签</button>
 </form>
 
 <script>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, url_for, redirect, send_from_directory
+from flask import Flask, render_template, request, send_file, url_for, jsonify
 import os
 import json
 from jinja2 import Environment, FileSystemLoader
@@ -6,11 +6,11 @@ from datetime import datetime  # 引入时间模块
 import barcode
 from barcode.writer import ImageWriter
 from io import BytesIO
-import base64
 import qrcode
 from qrcode.image.pil import PilImage
 
 app = Flask(__name__)
+app_version = '1.0.0'
 
 # 读取品牌信息和产品信息
 with open('config/brands_info.json', 'r', encoding='utf-8') as f:
@@ -36,7 +36,7 @@ product_names = list(product_info.keys())
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', app_version=app_version)
 
 @app.route('/installed')
 def installed():
@@ -428,6 +428,127 @@ def delete_file(filename):
         return {'message': '文件已删除'}, 200
     else:
         return {'message': '文件不存在'}, 404
+
+@app.route('/raid_calculator', methods=['GET', 'POST'])
+def raid_calculator():
+    if request.method == 'POST':
+        data = request.get_json()  # 获取JSON格式的数据
+        mode = data['mode']
+        raid_level = data['raid_level']
+        disk_capacity = float(data['disk_capacity'])
+        unit = data['unit']
+        if unit == 'GB':
+            disk_capacity /= 1024  # Convert GB to TB
+
+        if mode == 'forward':
+            num_disks = int(data['num_disks'])
+            raid_before, raid_after, result = calculate_raid_forward(raid_level, disk_capacity, num_disks)
+
+            # 如果返回的是错误提示信息
+            if isinstance(result, str):
+                return jsonify({'error': result}), 400
+
+        elif mode == 'reverse':
+            raid_after = float(data['raid_after'])
+            if unit == 'GB':
+                raid_after /= 1024  # Convert GB to TB
+            num_disks, raid_before, result = calculate_raid_reverse(raid_level, disk_capacity, raid_after)
+
+            # 如果返回的是错误提示信息
+            if isinstance(result, str):
+                return jsonify({'error': result}), 400
+
+        # Convert TB to GB for display if needed
+        if unit == 'GB':
+            disk_capacity *= 1024
+            raid_before *= 1024
+            raid_after *= 1024
+            result *= 1024
+
+        return jsonify({
+            'mode': mode,
+            'raid_level': raid_level,
+            'disk_capacity': disk_capacity,
+            'num_disks': num_disks,
+            'raid_before': raid_before,
+            'raid_after': raid_after,
+            'computer_recognized': result,
+            'unit': unit
+        })
+    else:
+        return render_template('raid_calculator.html', mode='forward', raid_level='0', raid_before=0, computer_recognized=0, unit='TB')
+
+def calculate_raid_forward(raid_level, disk_capacity, num_disks):
+    # 定义每种RAID级别所需的最小磁盘数
+    min_disks_required = {
+        '0': 2,
+        '1': 2,
+        '5': 3,
+        '6': 4,
+        '10': 4,
+        '50': 6,
+        '60': 8
+    }
+
+    # 检查磁盘数量是否满足要求
+    if raid_level not in min_disks_required or num_disks < min_disks_required.get(raid_level, float('inf')):
+        return None, None, f"RAID {raid_level} 需要至少 {min_disks_required.get(raid_level, '未知')} 块磁盘"
+
+    if raid_level == '0':
+        raid_before = disk_capacity * num_disks
+        raid_after = raid_before
+    elif raid_level == '1':
+        raid_before = disk_capacity * num_disks
+        raid_after = disk_capacity
+    elif raid_level == '5':
+        raid_before = disk_capacity * num_disks
+        raid_after = disk_capacity * (num_disks - 1)
+    elif raid_level == '6':
+        raid_before = disk_capacity * num_disks
+        raid_after = disk_capacity * (num_disks - 2)
+    elif raid_level == '10':
+        raid_before = disk_capacity * num_disks
+        raid_after = disk_capacity * (num_disks // 2)
+    elif raid_level == '50':
+        raid_before = disk_capacity * num_disks
+        raid_after = disk_capacity * (num_disks // 2) * (num_disks // 2 - 1)
+    elif raid_level == '60':
+        raid_before = disk_capacity * num_disks
+        raid_after = disk_capacity * (num_disks // 2) * (num_disks // 2 - 2)
+    else:
+        return 0, 0, "未知的RAID级别"
+
+    computer_recognized = raid_after * 0.93132
+    return raid_before, raid_after, computer_recognized
+
+
+def calculate_raid_reverse(raid_level, disk_capacity, raid_after):
+    if raid_level == '0':
+        num_disks = raid_after / disk_capacity
+        raid_before = raid_after
+    elif raid_level == '1':
+        num_disks = raid_after / disk_capacity
+        raid_before = raid_after
+    elif raid_level == '5':
+        num_disks = raid_after / disk_capacity + 1
+        raid_before = num_disks * disk_capacity
+    elif raid_level == '6':
+        num_disks = raid_after / disk_capacity + 2
+        raid_before = num_disks * disk_capacity
+    elif raid_level == '10':
+        num_disks = (raid_after / disk_capacity) * 2
+        raid_before = num_disks * disk_capacity
+    elif raid_level == '50':
+        num_disks = ((raid_after / disk_capacity) ** 0.5 + 1) * 2
+        raid_before = num_disks * disk_capacity
+    elif raid_level == '60':
+        num_disks = ((raid_after / disk_capacity) ** 0.5 + 2) * 2
+        raid_before = num_disks * disk_capacity
+    else:
+        return 0, 0, 0
+
+    computer_recognized = raid_after * 0.93132
+    return int(num_disks), raid_before, computer_recognized
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=8080)

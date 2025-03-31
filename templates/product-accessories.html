@@ -4,13 +4,6 @@
 
 {% block content %}
 <style>
-    /* 特定于 product-accessories.html 的样式 */
-    h1 {
-        color: #4CAF50; /* 绿色标题 */
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
     /* 表单样式 */
     .form-group {
         margin-bottom: 15px;
@@ -36,27 +29,9 @@
     .form-group input:focus, 
     .form-group select:focus, 
     .form-group textarea:focus {
-        border-color: #4CAF50; /* 聚焦时绿色边框 */
+        border-color: #007bff; /* 聚焦时绿色边框 */
         outline: none;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* 聚焦时外发光 */
-    }
-
-    /* 按钮样式 */
-    button[type="submit"], 
-    button[type="button"] {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #4CAF50; /* 绿色背景 */
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    button[type="submit"]:hover, 
-    button[type="button"]:hover {
-        background-color: #45a049; /* 悬停时深绿色 */
+        box-shadow: 0 0 5px rgba(23, 106, 201, 0.5); /* 聚焦时外发光 */
     }
 
     /* 产品清单样式 */
@@ -126,7 +101,7 @@
     }
 </style>
 
-<h1>产品附件和资料装箱清单生成</h1>
+<h3>产品附件和资料装箱清单生成</h3>
 <form id="accessories-form">
     <div class="form-group">
         <label for="brand">选择品牌:</label>
@@ -156,7 +131,7 @@
         <div id="accessories-container">
             <!-- 附件项将通过JavaScript动态添加 -->
         </div>
-        <button type="button" id="add-accessories">添加附件</button>
+        <button class="btn btn-primary" type="button" id="add-accessories">添加附件</button>
     </div>
     <div class="form-group">
         <label for="date">日期:</label>
@@ -164,7 +139,7 @@
     </div>
     <!-- 添加隐藏字段用于传递条码Base64编码 -->
     <input type="hidden" id="barcode_base64" name="barcode_base64">
-    <button type="submit">立即生成</button>
+    <button class="btn btn-primary" type="submit">立即生成</button>
 </form>
 
 <script>
