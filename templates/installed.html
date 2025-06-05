@@ -191,6 +191,14 @@
             const productName = this.value;
             const productCodeInput = productItem.querySelector('input[name="product_code[]"]');
             productCodeInput.value = productInfo[productName] || '';
+            
+            // 设置默认数量逻辑
+            const quantityInput = productItem.querySelector('input[name="quantity[]"]');
+            if (productName === "550W电源模块") {
+                quantityInput.value = 2;
+            } else {
+                quantityInput.value = 1;
+            }
         });
 
         // 删除按钮事件

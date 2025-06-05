@@ -10,7 +10,7 @@ import qrcode
 from qrcode.image.pil import PilImage
 
 app = Flask(__name__)
-app_version = '1.0.0'
+app_version = '1.0.1'
 
 # 读取品牌信息和产品信息
 with open('config/brands_info.json', 'r', encoding='utf-8') as f:
