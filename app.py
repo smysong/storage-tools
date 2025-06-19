@@ -10,7 +10,7 @@ import qrcode
 from qrcode.image.pil import PilImage
 
 app = Flask(__name__)
-app_version = '1.0.1'
+app_version = '1.0.2'
 
 # 读取品牌信息和产品信息
 with open('config/brands_info.json', 'r', encoding='utf-8') as f:
@@ -479,7 +479,6 @@ def raid_calculator():
         return render_template('raid_calculator.html', mode='forward', raid_level='0', raid_before=0, computer_recognized=0, unit='TB')
 
 def calculate_raid_forward(raid_level, disk_capacity, num_disks):
-    # 定义每种RAID级别所需的最小磁盘数
     min_disks_required = {
         '0': 2,
         '1': 2,
@@ -490,7 +489,6 @@ def calculate_raid_forward(raid_level, disk_capacity, num_disks):
         '60': 8
     }
 
-    # 检查磁盘数量是否满足要求
     if raid_level not in min_disks_required or num_disks < min_disks_required.get(raid_level, float('inf')):
         return None, None, f"RAID {raid_level} 需要至少 {min_disks_required.get(raid_level, '未知')} 块磁盘"
 
@@ -510,11 +508,20 @@ def calculate_raid_forward(raid_level, disk_capacity, num_disks):
         raid_before = disk_capacity * num_disks
         raid_after = disk_capacity * (num_disks // 2)
     elif raid_level == '50':
+        # 假设分2组
+        group_count = 2
+        disks_per_group = num_disks // group_count
+        if disks_per_group < 3:
+            return None, None, "RAID 50 每组至少需要3块盘"
         raid_before = disk_capacity * num_disks
-        raid_after = disk_capacity * (num_disks // 2) * (num_disks // 2 - 1)
+        raid_after = group_count * disk_capacity * (disks_per_group - 1)
     elif raid_level == '60':
+        group_count = 2
+        disks_per_group = num_disks // group_count
+        if disks_per_group < 4:
+            return None, None, "RAID 60 每组至少需要4块盘"
         raid_before = disk_capacity * num_disks
-        raid_after = disk_capacity * (num_disks // 2) * (num_disks // 2 - 2)
+        raid_after = group_count * disk_capacity * (disks_per_group - 2)
     else:
         return 0, 0, "未知的RAID级别"
 
@@ -539,10 +546,16 @@ def calculate_raid_reverse(raid_level, disk_capacity, raid_after):
         num_disks = (raid_after / disk_capacity) * 2
         raid_before = num_disks * disk_capacity
     elif raid_level == '50':
-        num_disks = ((raid_after / disk_capacity) ** 0.5 + 1) * 2
+        group_count = 2
+        # raid_after = group_count * (disks_per_group - 1) * disk_capacity
+        disks_per_group = raid_after / (disk_capacity * group_count) + 1
+        num_disks = group_count * disks_per_group
         raid_before = num_disks * disk_capacity
     elif raid_level == '60':
-        num_disks = ((raid_after / disk_capacity) ** 0.5 + 2) * 2
+        group_count = 2
+        # raid_after = group_count * (disks_per_group - 2) * disk_capacity
+        disks_per_group = raid_after / (disk_capacity * group_count) + 2
+        num_disks = group_count * disks_per_group
         raid_before = num_disks * disk_capacity
     else:
         return 0, 0, 0
